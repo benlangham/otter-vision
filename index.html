@@ -50,7 +50,7 @@
     <div id="topbar">
       <div id="flexcont">
         <div id="left"><h1 class="title">OTTER-vision</h1></div>
-        <div id="right"><h1 class="title">&nbsp&nbsp&nbspOTTER-vision</h1></div>
+        <div id="right"><h1 class="title">&nbsp&nbsp&nbsp&nbsp&nbsp&nbspOTTER-vision</h1></div>
       </div>
     </div>
     <div id="webglviewer"></div>
@@ -187,8 +187,8 @@
         function streamFound(stream) {
           document.body.appendChild(video);
           video.src = URL.createObjectURL(stream);
-          video.style.width = '30%';
-          video.style.height = '30%';
+          video.style.width = '17%';
+          video.style.height = '17%';
           video.play();
 
           canvas = document.createElement('canvas');
