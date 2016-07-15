@@ -1,12 +1,7 @@
 OTTER-vision
 ========
 
-A demo showing how to use HTML5, JavaScript, WebGL and Google Cardboard to create a manipulated view of the world around you via your phone's front camera.
-
-If you make something brilliant from this code, please do let me know! I'm on Twitter at @thatpatrickguy, or you can find me at http://www.patrickcatanzariti.com.
-
-PatCat
-
+A VR app that lets you enter the world of OTTER using HTML5, JavaScript, WebGL and Google Cardboard.
 
 Based on this tutorial by @thatpatrickguy:
 https://www.sitepoint.com/filtering-reality-with-javascript-google-cardboard/
