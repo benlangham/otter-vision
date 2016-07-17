@@ -398,7 +398,8 @@
       }
 
       function render(dt) {
-        effect.render(scene, camera);
+          // Render the scene through the manager.
+          manager.render(scene, camera);
       }
 
       function fullscreen() {
