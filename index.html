@@ -47,21 +47,30 @@
     ctx.fillStyle = "red";
     context.fillText("OtterVision",canvas.width/2, canvas.height/2); -->
 
+<!--
     <div id="topbar">
       <div id="flexcont">
         <div id="left"><h1 class="title">OTTER-vision</h1></div>
         <div id="right"><h1 class="title">&nbsp&nbsp&nbsp&nbsp&nbsp&nbspOTTER-vision</h1></div>
       </div>
     </div>
+-->
     <div id="webglviewer"></div>
     <script src="./js/three.min.js"></script>
     <script src="./js/StereoEffect.js"></script>
     <script src="./js/close-pixelate-canvas.js"></script>
     <script src="./node_modules/sobel/sobel.js"></script>
-    <!--
+
+    <!-- WEB-VR BOILERPLATE
       VREffect.js handles stereo camera setup and rendering. From web-vr boilerplate
       -->
     <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
+    
+    <!--
+      Helps enter and exit VR mode, provides best practices while in VR.
+      -->
+    <script src="build/webvr-manager.js"></script>
+
     <script>
       var scene,
           camera, 
@@ -79,6 +88,13 @@
       init();
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
+
+    // Create a VR manager helper to enter and exit VR mode. (From Webvr-boilerplate)
+    var params = {
+      hideButton: false, // Default: false.
+      isUndistorted: false // Default: false.
+    };
+    var manager = new WebVRManager(renderer, effect, params);
 
       function changeFx() {
         if (currentTheme === 5) {
@@ -133,7 +149,7 @@
         container = document.getElementById('webglviewer');
         container.appendChild(element);
 
-        effect = new THREE.StereoEffect(renderer);
+        effect = new THREE.VREffect(renderer); // was StereoEffect
 
         element.addEventListener('click', fullscreen, false);
 
@@ -187,8 +203,8 @@
         function streamFound(stream) {
           document.body.appendChild(video);
           video.src = URL.createObjectURL(stream);
-          video.style.width = '17%';
-          video.style.height = '17%';
+          video.style.width = '15%';
+          video.style.height = '15%';
           video.play();
 
           canvas = document.createElement('canvas');
