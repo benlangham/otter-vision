@@ -89,12 +89,7 @@
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
 
-    // Create a VR manager helper to enter and exit VR mode. (From Webvr-boilerplate)
-    var params = {
-      hideButton: false, // Default: false.
-      isUndistorted: false // Default: false.
-    };
-    var manager = new WebVRManager(renderer, effect, params);
+
 
       function changeFx() {
         if (currentTheme === 5) {
@@ -137,6 +132,8 @@
         };
         return d;
       }
+
+
       
       function init() {
         scene = new THREE.Scene();
@@ -151,6 +148,12 @@
 
         effect = new THREE.VREffect(renderer); // was StereoEffect
 
+        // Create a VR manager helper to enter and exit VR mode. (From Webvr-boilerplate)
+        var params = {
+          hideButton: false, // Default: false.
+          isUndistorted: false // Default: false.
+        };
+        var manager = new WebVRManager(renderer, effect, params);
 
         element.addEventListener('click', fullscreen, false);
 
@@ -376,7 +379,7 @@
 
         // Render the scene through the manager.
         manager.render(scene, camera, timestamp);
-        
+
         requestAnimationFrame(animate);
 
         update();
