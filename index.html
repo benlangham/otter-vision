@@ -374,10 +374,13 @@
 
         }
 
+        // Render the scene through the manager.
+        manager.render(scene, camera, timestamp);
+        
         requestAnimationFrame(animate);
 
         update();
-        render();
+
       }
 
       function resize() {
@@ -398,8 +401,7 @@
       }
 
       function render(dt) {
-          // Render the scene through the manager.
-          manager.render(scene, camera);
+        effect.render(scene, camera);
       }
 
       function fullscreen() {
