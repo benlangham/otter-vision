@@ -34,7 +34,7 @@
       }
       h1.title {
         font-family: 'Press Start 2P', cursive;
-        font-size: 10px;
+        font-size: 20px;
       }
 
     </style>
@@ -47,30 +47,21 @@
     ctx.fillStyle = "red";
     context.fillText("OtterVision",canvas.width/2, canvas.height/2); -->
 
-<!--
     <div id="topbar">
       <div id="flexcont">
-        <div id="left"><h1 class="title">OTTER-vision</h1></div>
-        <div id="right"><h1 class="title">&nbsp&nbsp&nbsp&nbsp&nbsp&nbspOTTER-vision</h1></div>
+<!--         <div id="left"><h1 class="title">OTTER-vision</h1></div>
+        <div id="right"><h1 class="title">OTTER-vision</h1></div> -->
       </div>
     </div>
--->
     <div id="webglviewer"></div>
     <script src="./js/three.min.js"></script>
     <script src="./js/StereoEffect.js"></script>
     <script src="./js/close-pixelate-canvas.js"></script>
     <script src="./node_modules/sobel/sobel.js"></script>
-
-    <!-- WEB-VR BOILERPLATE
+    <!--
       VREffect.js handles stereo camera setup and rendering. From web-vr boilerplate
       -->
     <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
-    
-    <!--
-      Helps enter and exit VR mode, provides best practices while in VR.
-      -->
-    <script src="build/webvr-manager.js"></script>
-
     <script>
       var scene,
           camera, 
@@ -82,12 +73,14 @@
           canvas,
           context,
           themes = ['blackandwhite', 'sepia', 'arcade', 'inverse', 'sobel', 'invsobel'],
-          currentTheme = 5,
+          currentTheme = 4,  // Change this to select type of effect
           lookingAtGround = false;
 
       init();
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
+
+      var resolution = '20%';  // Adjust this but will slow it down (was 12%)
 
       function changeFx() {
         if (currentTheme === 5) {
@@ -104,7 +97,7 @@
         setTimeout(changeFx, delay);
       }
 
-      // Threshold filter
+      // FILTERS
       function threshold(d) {
         for (var i = 0; i < d.length; i+=4) {
           var r = d[i];
@@ -116,7 +109,7 @@
         return d;
       }
 
-      // Inverse filter
+      // INVERSE
       function inverse(d) {
         for (var i = 0; i < d.length; i+=4) {
           var red = 255 - d[i],
@@ -130,8 +123,6 @@
         };
         return d;
       }
-
-
       
       function init() {
         scene = new THREE.Scene();
@@ -144,7 +135,8 @@
         container = document.getElementById('webglviewer');
         container.appendChild(element);
 
-        effect = new THREE.StereoEffect(renderer); // was StereoEffect
+        effect = new THREE.StereoEffect(renderer);
+        //effect = new THREE.VREffect(renderer);
 
         element.addEventListener('click', fullscreen, false);
 
@@ -198,8 +190,8 @@
         function streamFound(stream) {
           document.body.appendChild(video);
           video.src = URL.createObjectURL(stream);
-          video.style.width = '15%';
-          video.style.height = '15%';
+          video.style.width = resolution;
+          video.style.height = resolution;
           video.play();
 
           canvas = document.createElement('canvas');
@@ -212,13 +204,16 @@
               return Math.pow(2, Math.ceil(Math.log(x) / Math.log(2))); 
           }
 
+          // Get context of canvas element (use to draw lines & shaped onto element)
           context = canvas.getContext('2d');
           texture = new THREE.Texture(canvas);
           texture.context = context;
           //texture.minFilter = THREE.LinearMipMapLinearFilter;
           //texture.magFilter = THREE.NearestFilter;
 
+          // Size of video on overall screen
           var cameraPlane = new THREE.PlaneBufferGeometry(1920, 1280);
+
 
           cameraMesh = new THREE.Mesh(cameraPlane, new THREE.MeshBasicMaterial({
             color: 0xffffff, opacity: 1, map: texture
@@ -281,6 +276,7 @@
             imageData.data = data;
 
             context.putImageData(imageData, 0, 0);
+
           } else if (themes[currentTheme] == 'inverse') {
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
@@ -338,10 +334,11 @@
           } else if (themes[currentTheme] == 'sobel') {
 
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
             // Sobel constructor returns an Uint8ClampedArray with sobel data 
             var sobelData = Sobel(imageData);
-
-            var sobelData = threshold(sobelData);
+ 
+            //var sobelData = threshold(sobelData);  (removed as too pixelated)
 
             // [sobelData].toImageData() returns a new ImageData object 
             var sobelImageData = sobelData.toImageData();
@@ -354,7 +351,7 @@
             var sobelData = Sobel(imageData);
 
             sobelData = inverse(sobelData);
-            sobelData = threshold(sobelData);   
+            //sobelData = threshold(sobelData);   
 
             // [sobelData].toImageData() returns a new ImageData object 
             var sobelImageData = sobelData.toImageData();
@@ -368,14 +365,10 @@
 
         }
 
-        // Render the scene through the manager.
-        //manager.render(scene, camera, timestamp);
-
         requestAnimationFrame(animate);
 
         update();
         render();
-
       }
 
       function resize() {
@@ -410,6 +403,56 @@
           container.webkitRequestFullscreen();
         }
       }
+
+// Web VR Polyfill config
+
+var WebVRConfig = {
+  // Flag to disabled the UI in VR Mode.
+  CARDBOARD_UI_DISABLED: false, // Default: false
+
+  // Forces availability of VR mode, even for non-mobile devices.
+  FORCE_ENABLE_VR: true, // Default: false.
+
+  // Complementary filter coefficient. 0 for accelerometer, 1 for gyro.
+  K_FILTER: 0.98, // Default: 0.98.
+
+  // Flag to disable the instructions to rotate your device.
+  ROTATE_INSTRUCTIONS_DISABLED: false, // Default: false.
+
+  // How far into the future to predict during fast motion (in seconds).
+  PREDICTION_TIME_S: 0.040, // Default: 0.040.
+
+  // Flag to disable touch panner. In case you have your own touch controls.
+  TOUCH_PANNER_DISABLED: false, // Default: true.
+
+  // Enable yaw panning only, disabling roll and pitch. This can be useful
+  // for panoramas with nothing interesting above or below.
+  YAW_ONLY: true, // Default: false.
+
+  // To disable keyboard and mouse controls, if you want to use your own
+  // implementation.
+  MOUSE_KEYBOARD_CONTROLS_DISABLED: true, // Default: false.
+
+  // Prevent the polyfill from initializing immediately. Requires the app
+  // to call InitializeWebVRPolyfill() before it can be used.
+  DEFER_INITIALIZATION: true, // Default: false.
+
+  // Enable the deprecated version of the API (navigator.getVRDevices).
+  ENABLE_DEPRECATED_API: true, // Default: false.
+
+  // Scales the recommended buffer size reported by WebVR, which can improve
+  // performance.
+  BUFFER_SCALE: 0.5, // Default: 0.5.
+
+  // Allow VRDisplay.submitFrame to change gl bindings, which is more
+  // efficient if the application code will re-bind its resources on the
+  // next frame anyway. This has been seen to cause rendering glitches with
+  // THREE.js.
+  // Dirty bindings include: gl.FRAMEBUFFER_BINDING, gl.CURRENT_PROGRAM,
+  // gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING,
+  // and gl.TEXTURE_BINDING_2D for texture unit 0.
+  DIRTY_SUBMIT_FRAME_BINDINGS: true // Default: false.
+}      
 
     </script>
   </body>
