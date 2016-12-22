@@ -62,6 +62,13 @@
       VREffect.js handles stereo camera setup and rendering. From web-vr boilerplate
       -->
     <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
+
+    -    <!--
+ -      Helps enter and exit VR mode, provides best practices while in VR.
+ -      -->
+ -    <script src="build/webvr-manager.js"></script>
+
+ 
     <script>
       var scene,
           camera, 
@@ -80,7 +87,7 @@
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
 
-      var resolution = '20%';  // Adjust this but will slow it down (was 12%)
+      var resolution = '40%';  // Adjust this but will slow it down (was 12%)
 
       function changeFx() {
         if (currentTheme === 5) {
