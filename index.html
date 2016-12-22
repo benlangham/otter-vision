@@ -80,6 +80,8 @@
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
 
+      var resolution = '30%';  // Adjust this but will slow it down (was 12%)
+
       function changeFx() {
         if (currentTheme === 5) {
           currentTheme = 4;
@@ -188,8 +190,8 @@
         function streamFound(stream) {
           document.body.appendChild(video);
           video.src = URL.createObjectURL(stream);
-          video.style.width = '20%';
-          video.style.height = '20%';
+          video.style.width = resolution;
+          video.style.height = resolution;
           video.play();
 
           canvas = document.createElement('canvas');
