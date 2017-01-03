@@ -1,7 +1,7 @@
 (function(root) {
   'use strict';
 
-  var threshold = 100;  // For pixel calculation
+  var threshold = 40;  // For pixel calculation
 
   function Sobel(imageData) {
     if (!(this instanceof Sobel)) {
