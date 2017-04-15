@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Otter-Vision</title>
+    <title>Reality Filter</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
@@ -36,6 +36,7 @@
         font-family: 'Press Start 2P', cursive;
         font-size: 20px;
       }
+
     </style>
     <script src="./js/three.min.js"></script>
     <script src="./js/StereoEffect.js"></script>
@@ -83,12 +84,17 @@
           canvas,
           context,
           themes = ['blackandwhite', 'sepia', 'arcade', 'inverse', 'sobel', 'invsobel'],
+
           currentTheme = 5,  // Change this to select type of effect
+
           lookingAtGround = false;
+
       init();
       var delay = 2000;
       // changeFx();  // Switch between normal and inverse
+
       var resolution = '40%';  // Adjust this but will slow it down (was 12%)
+
       function changeFx() {
         if (currentTheme === 5) {
           currentTheme = 4;
@@ -103,6 +109,7 @@
         if (delay < 100) delay = 2000;
         setTimeout(changeFx, delay);
       }
+
       // FILTERS
       function threshold(d) {
         for (var i = 0; i < d.length; i+=4) {
@@ -114,6 +121,7 @@
         };
         return d;
       }
+
       // INVERSE
       function inverse(d) {
         for (var i = 0; i < d.length; i+=4) {
@@ -121,6 +129,7 @@
               green = 255 - d[i+1],
               blue = 255 - d[i+2];
               // End of inverse
+
           d[i] = red;
           d[i+1] = green;
           d[i+2] = blue;
@@ -133,25 +142,31 @@
         camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
         camera.position.set(0, 15, 0);
         scene.add(camera);
+
         renderer = new THREE.WebGLRenderer();
         element = renderer.domElement;
         container = document.getElementById('webglviewer');
         container.appendChild(element);
+
         effect = new THREE.StereoEffect(renderer);
         //effect = new THREE.VREffect(renderer);
+
         element.addEventListener('click', fullscreen, false);
+
         if (window.DeviceOrientationEvent) {
           window.addEventListener('deviceorientation', function(evt) {
             if (evt.gamma > -1 && evt.gamma < 1 && !lookingAtGround) {
               lookingAtGround = true;
               // currentTheme = (themes.length > currentTheme+1) ? currentTheme+1 : 0;
               // Removed above line so stays on previously selected effect
+
               setTimeout(function() {
                 lookingAtGround = false;
               }, 4000);
             }
           }.bind(this));
         }
+
         video = document.createElement('video');
         video.setAttribute('autoplay', true);
         
@@ -164,12 +179,17 @@
             }
           }
         };
+
         navigator.getUserMedia = navigator.getUserMedia ||
         navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+
         if (typeof MediaStreamTrack === 'undefined' && navigator.getUserMedia) {
           alert('This browser doesn\'t support this demo :(');
-        } else {
-          MediaStreamTrack.getSources(function(sources) {
+        } else { 
+
+          
+          navigator.mediaDevices.enumerateDevices().then(function(sources) {
             for (var i = 0; i !== sources.length; ++i) {
               var source = sources[i];
               if (source.kind === 'video') {
@@ -182,51 +202,70 @@
             navigator.getUserMedia(options, streamFound, streamError);
           });
         }
+
+
         function streamFound(stream) {
           document.body.appendChild(video);
           video.src = URL.createObjectURL(stream);
           video.style.width = resolution;
           video.style.height = resolution;
           video.play();
+
           canvas = document.createElement('canvas');
           canvas.width = video.clientWidth;
           canvas.height = video.clientHeight;
           canvas.width = nextPowerOf2(canvas.width);
           canvas.height = nextPowerOf2(canvas.height);
+
           function nextPowerOf2(x) { 
               return Math.pow(2, Math.ceil(Math.log(x) / Math.log(2))); 
           }
+
           // Get context of canvas element (use to draw lines & shaped onto element)
           context = canvas.getContext('2d');
           texture = new THREE.Texture(canvas);
           texture.context = context;
           //texture.minFilter = THREE.LinearMipMapLinearFilter;
           //texture.magFilter = THREE.NearestFilter;
+
           // Size of video on overall screen
-          var cameraPlane = new THREE.PlaneBufferGeometry(1920, 680); // was 1920, 1280
+          var cameraPlane = new THREE.PlaneBufferGeometry(1920, 1280);
+
+
           cameraMesh = new THREE.Mesh(cameraPlane, new THREE.MeshBasicMaterial({
             color: 0xffffff, opacity: 1, map: texture
           }));
           cameraMesh.position.z = -600;
+
           scene.add(cameraMesh);
+
         }
+
         function streamError(error) {
           console.log('Stream error: ', error);
         }
+
         animate();
       }
+
+
       function animate() {
         if (context) {
           context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
           if (themes[currentTheme] == 'blackandwhite') {
+
 /* NORMAL VIDEO
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
+
             imageData.data = data;
             context.putImageData(imageData, 0, 0);
 */
+
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
+
             for (var i = 0; i < data.length; i+=4) {
               var red = data[i],
                   green = data[i+1],
@@ -245,28 +284,37 @@
                 green = 0;
                 blue = 0;
               }
+
               data[i] = red;
               data[i+1] = green;
               data[i+2] = blue;
             }
+
             imageData.data = data;
+
             context.putImageData(imageData, 0, 0);
+
           } else if (themes[currentTheme] == 'inverse') {
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
+
             for (var i = 0; i < data.length; i+=4) {
               var red = 255 - data[i],
                   green = 255 - data[i+1],
                   blue = 255 - data[i+2];
+
               data[i] = red;
               data[i+1] = green;
               data[i+2] = blue;
             }
+
             imageData.data = data;
+
             context.putImageData(imageData, 0, 0);
           } else if (themes[currentTheme] == 'sepia') {
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
+
             for (var i = 0; i < data.length; i+=4) {
               var red = data[i],
                   green = data[i+1],
@@ -275,19 +323,25 @@
               var sepiaRed = (red * 0.393) + (green * 0.769) + (blue * 0.189);
               var sepiaGreen = (red * 0.349) + (green * 0.686) + (blue * 0.168);
               var sepiaBlue = (red * 0.272) + (green * 0.534) + (blue * 0.131);
+
               var randomNoise = Math.random() * 50;
+
               sepiaRed += randomNoise;
               sepiaGreen += randomNoise;
               sepiaBlue += randomNoise;
+
               sepiaRed = sepiaRed > 255 ? 255 : sepiaRed;
               sepiaGreen = sepiaGreen > 255 ? 255 : sepiaGreen;
               sepiaBlue = sepiaBlue > 255 ? 255 : sepiaBlue;
+
               data[i] = sepiaRed;
               data[i+1] = sepiaGreen;
               data[i+2] = sepiaBlue;
             }
+
             imageData.data = data;
             context.putImageData(imageData, 0, 0);
+
           } else if (themes[currentTheme] == 'arcade') {
             ClosePixelation(canvas, context, [
               {
@@ -295,47 +349,66 @@
               }
             ])
           } else if (themes[currentTheme] == 'sobel') {
+
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
             // Sobel constructor returns an Uint8ClampedArray with sobel data 
             var sobelData = Sobel(imageData);
  
             //var sobelData = threshold(sobelData);  (removed as too pixelated)
+
             // [sobelData].toImageData() returns a new ImageData object 
             var sobelImageData = sobelData.toImageData();
             context.putImageData(sobelImageData, 0, 0);
+
           } else if (themes[currentTheme] == 'invsobel') {
+
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             // Sobel constructor returns an Uint8ClampedArray with sobel data 
             var sobelData = Sobel(imageData);
+
             sobelData = inverse(sobelData);
             //sobelData = threshold(sobelData);   
+
             // [sobelData].toImageData() returns a new ImageData object 
             var sobelImageData = sobelData.toImageData();
             context.putImageData(sobelImageData, 0, 0);
+
           }
+
           if (video.readyState === video.HAVE_ENOUGH_DATA) {
             texture.needsUpdate = true;
           }
+
         }
+
         requestAnimationFrame(animate);
+
         update();
         render();
       }
+
       function resize() {
         var width = container.offsetWidth;
         var height = container.offsetHeight;
+
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
+
         renderer.setSize(width, height);
         effect.setSize(width, height);
       }
+
       function update(dt) {
         resize();
+
         camera.updateProjectionMatrix();
       }
+
       function render(dt) {
         effect.render(scene, camera);
       }
+
       function fullscreen() {
         if (container.requestFullscreen) {
           container.requestFullscreen();
@@ -347,34 +420,47 @@
           container.webkitRequestFullscreen();
         }
       }
+
 // Web VR Polyfill config
+
 var WebVRConfig = {
   // Flag to disabled the UI in VR Mode.
   CARDBOARD_UI_DISABLED: false, // Default: false
+
   // Forces availability of VR mode, even for non-mobile devices.
   FORCE_ENABLE_VR: true, // Default: false.
+
   // Complementary filter coefficient. 0 for accelerometer, 1 for gyro.
   K_FILTER: 0.98, // Default: 0.98.
+
   // Flag to disable the instructions to rotate your device.
   ROTATE_INSTRUCTIONS_DISABLED: false, // Default: false.
+
   // How far into the future to predict during fast motion (in seconds).
   PREDICTION_TIME_S: 0.040, // Default: 0.040.
+
   // Flag to disable touch panner. In case you have your own touch controls.
   TOUCH_PANNER_DISABLED: false, // Default: true.
+
   // Enable yaw panning only, disabling roll and pitch. This can be useful
   // for panoramas with nothing interesting above or below.
   YAW_ONLY: true, // Default: false.
+
   // To disable keyboard and mouse controls, if you want to use your own
   // implementation.
   MOUSE_KEYBOARD_CONTROLS_DISABLED: true, // Default: false.
+
   // Prevent the polyfill from initializing immediately. Requires the app
   // to call InitializeWebVRPolyfill() before it can be used.
   DEFER_INITIALIZATION: true, // Default: false.
+
   // Enable the deprecated version of the API (navigator.getVRDevices).
   ENABLE_DEPRECATED_API: true, // Default: false.
+
   // Scales the recommended buffer size reported by WebVR, which can improve
   // performance.
   BUFFER_SCALE: 0.5, // Default: 0.5.
+
   // Allow VRDisplay.submitFrame to change gl bindings, which is more
   // efficient if the application code will re-bind its resources on the
   // next frame anyway. This has been seen to cause rendering glitches with
@@ -384,6 +470,7 @@ var WebVRConfig = {
   // and gl.TEXTURE_BINDING_2D for texture unit 0.
   DIRTY_SUBMIT_FRAME_BINDINGS: true // Default: false.
 }      
+
     </script>
   </body>
 </html>
