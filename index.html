@@ -190,7 +190,8 @@
 
           
           navigator.mediaDevices.enumerateDevices().then(function(sources) {
-            for (var i = 0; i !== sources.length; ++i) {
+            //for (var i = 0; i !== sources.length; ++i) {
+            for (var i = sources.length; i > 0; i--) {
               var source = sources[i];
               if (source.kind === 'video') {
                 if (source.facing && source.facing == "environment") {
