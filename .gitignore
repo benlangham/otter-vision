@@ -2,3 +2,6 @@ node_modules/
 js/
 notes.txt
 textures/
+
+!node_modules/sobel/sobel.js
+!node_modules/three/examples/js/effects/VREffect.js
