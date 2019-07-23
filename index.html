@@ -41,14 +41,12 @@
     <script src="./js/three.min.js"></script>
     <script src="./js/StereoEffect.js"></script>
     <script src="./js/close-pixelate-canvas.js"></script>
-    <!-- <script src="./node_modules/sobel/sobel.js"></script> Moved to top level due to request error --> 
-    <script src="sobel.js"></script>
+    <script src="./node_modules/sobel/sobel.js"></script>
 
     <!--
       VREffect.js handles stereo camera setup and rendering. From web-vr boilerplate
       -->
-    <!-- <script src="node_modules/three/examples/js/effects/VREffect.js"></script> Moved to top level due to request error -->
-    <script src="VREffect.js"></script>
+    <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
 
     -    <!--
  -      Helps enter and exit VR mode, provides best practices while in VR.
@@ -184,7 +182,9 @@
         if (typeof MediaStreamTrack === 'undefined' && navigator.getUserMedia) {
           alert('This browser doesn\'t support this demo :(');
         } else {
-          MediaStreamTrack.getSources(function(sources) {
+          //MediaStreamTrack.getSources(function(sources) {
+          navigator.mediaDevices.enumerateDevices()
+            .then(function (sources) {
             for (var i = 0; i !== sources.length; ++i) {
               var source = sources[i];
               if (source.kind === 'video') {
@@ -200,7 +200,9 @@
 
         function streamFound(stream) {
           document.body.appendChild(video);
-          video.src = URL.createObjectURL(stream);
+          // video.src = URL.createObjectURL(stream);
+          video.srcObject = stream;
+
           video.style.width = resolution;
           video.style.height = resolution;
           video.play();
